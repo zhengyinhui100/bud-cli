@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+const shell = require("shelljs");
+require('shelljs/global');
+const pkg=require('./package.json');
+
+
+const argv = require('yargs')
+  .command("init", "初始化项目模板", function (yargs) {
+    echo("bud init project:");
+    const budInit=require('./lib/bud-init')
+    var argv = yargs.reset()
+      .argv;
+
+    budInit.init(argv);
+  })
+  .command("dev", "启动开发环境", function (yargs) {
+    echo("bud dev watch project:");
+    const budWebpack=require('@xiaoge-fe/bud-build')
+    var argv = yargs.reset()
+      .option("a", {
+        alias: "analyze",
+        description: "分析webpack打包情况"
+      })
+      .argv;
+    budWebpack.watch(argv);
+  })
+  .command("build", "构建项目", function (yargs) {
+    echo("bud build project:");
+    const budWebpack=require('@xiaoge-fe/bud-build');
+    var argv = yargs.reset()
+      .option("p", {
+        alias: "package",
+        description: "压缩打包代码"
+      })
+      .option("c", {
+        alias: "cdn",
+        description: "打包cdn代码"
+      })
+      .option("o", {
+        alias: "online",
+        description: "压缩打包cdn代码"
+      })
+      .option("a", {
+        alias: "analyze",
+        description: "分析webpack打包情况"
+      })
+      .argv;
+    budWebpack.build(argv);
+  })
+  .option('v', {
+    alias : 'version',
+    demand: true,
+    describe: 'bud version'
+  })
+  .usage('Usage: bud [command] [options]')
+  .example('bud build -o', 'bud build resource online')
+  .alias('v', 'version')
+  .alias('i', 'init')
+  .alias('d', 'dev')
+  .alias('t', 'test')
+  .alias('o', 'online')
+  .help("h")
+  .alias("h", "help")
+  .epilog('copyright TFGUYS 2017')
+  .argv
+
+if(argv.v){
+  console.log('v'+pkg.version);
+}else if(argv.i){
+  console.log('init');
+}
